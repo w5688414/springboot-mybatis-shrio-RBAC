@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.ccnu.shirodemo.mapper.UserMapper">
+
+    <resultMap id="userMap" type="com.ccnu.shirodemo.entity.UserInfo">
+        <id property="uid" column="uid" />
+        <result property="username" column="username" />
+        <result property="name" column="name" />
+        <result property="password" column="password" />
+        <result property="salt" column="salt" />
+        <result property="state" column="state" />
+        <collection property="roleList" ofType="com.ccnu.shirodemo.entity.SysRole">
+            <id property="id" column="id" />
+            <result property="role" column="role" />
+            <result property="description" column="description" />
+            <result property="available" column="available" />
+            <collection property="permissions" ofType="com.ccnu.shirodemo.entity.SysPermission">
+                <id property="id" column="id" />
+                <result property="name" column="name"/>
+                <result property="resourceType" column="resourceType" />
+                <result property="url" column="url" />
+                <result property="permission" column="permission" />
+                <result property="parentId" column="parentId" />
+                <result property="parentIds" column="parentIds" />
+                <result property="available" column="available" />
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="findByUsername" parameterType="string" resultMap="userMap">
+        SELECT u.*, r.*, p.*
+        FROM user_info u
+        INNER JOIN sys_user_role ur on ur.uid = u.uid
+        INNER JOIN sys_role r on r.id = ur.role_id
+        INNER JOIN sys_role_permission rp on rp.role_id = r.id
+        INNER JOIN sys_permission p on rp.permission_id = p.id
+        WHERE u.username = #{username}
+    </select>
+</mapper>
